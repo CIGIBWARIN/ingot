@@ -12,7 +12,7 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const surface = process.env.CLAUDE_CODE_ENTRYPOINT === 'claude-desktop' || process.env.CLAUDE_CODE_DESKTOP_APP_VERSION ? 'desktop' : 'cli';
 const tag = / \{(cli|desktop)\}$/;
 const read = (f) => fs.readFileSync(path.join(root, f), 'utf8').split(/\r?\n/)
-  .filter((l) => !tag.test(l) || l.endsWith(`{${surface}}`)).map((l) => l.replace(tag, '')).join('\n');
+  .filter((l) => !tag.test(l) || l.endsWith(`{${surface}}`)).map((l) => l.replace(tag, '').replaceAll('{packs}', path.join(root, 'skills', 'specialize', 'packs.md'))).join('\n');
 const readJson = (f) => { try { return JSON.parse(fs.readFileSync(f, 'utf8').replace(/^﻿/, '')); } catch { return {}; } };
 
 // Settings come from env (settings.json "env") or, as a fallback, the settings files themselves.

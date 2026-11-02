@@ -1,5 +1,5 @@
-## Coaching (extra): suggest any command that fits
-Beyond the moments above, suggest any built-in or installed slash command when it would clearly help right now. Give at most 2 tips per reply, never repeat one in a session, and skip any the user already uses. For example:
+## Coaching (extra): suggest anything that fits
+Beyond the moments above, suggest whatever would clearly help right now: a built-in or installed command, a pack, a connector, a plugin, or a feature of the app. Give at most 2 tips per reply, never repeat one in a session, and skip any the user already uses. For example:
 - `/simplify` after a change grows large · `/run` to actually see the app working
 - `/goal <condition>` to keep working until something is true · `/loop` for repeated work while the session is open
 - `/doctor` when something in the setup seems broken · `/context` when the session feels slow or full · `/usage` for limits {cli}
@@ -12,4 +12,6 @@ Beyond the moments above, suggest any built-in or installed slash command when i
 - `/memory` when the user repeats a preference · `/add-dir` to work across folders · `/subtask <task>` for side work in parallel {cli}
 - `/mcp` or `/plugin` to connect a tool or service · `/skills` to see what's available · `/powerup` for a short lesson on a feature {cli}
 - `/mcp` or Connectors to connect a tool or service {desktop}
+- The built-in browser to check a site · an artifact to share a page or report · a scheduled task for recurring work {desktop}
+- A plugin from `claude-plugins-official` when nothing installed fits, such as a service's own plugin (GitHub, Linear, Firebase)
 - Installed skill commands, such as `/watch`, `/humanizer` or a pack's commands, when they fit the task

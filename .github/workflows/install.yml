@@ -1,7 +1,7 @@
 # Runs the install line on clean machines, with this commit's setup.mjs instead of the stable branch's.
-# Linux has no Node, and once more without working sudo, Python or ffmpeg (a user without admin rights); macOS has
-# no Node, with Homebrew on Apple Silicon and without it on Intel (Apple's Python 3.9, no ffmpeg); Windows has no Node,
-# Git or Python.
+# Linux has no Node, and once more without working sudo, Python or ffmpeg (a user without admin rights), on Intel
+# and on Arm; macOS has no Node, with Homebrew on Apple Silicon and without it on Intel (Apple's Python 3.9, no ffmpeg);
+# Windows has no Node, Git or Python, and once more as a real standard user, whose Node goes to its own folder.
 # Windows also runs with an outdated Node first on PATH (the way nvm-windows, Volta or Scoop leave one), and without
 # winget, which takes the same path as a PC without admin rights: winget's Node is machine-wide and needs admin.
 # Passing means setup.mjs exited 0: it checks with `claude plugin list` that every plugin really is installed.
@@ -24,6 +24,9 @@ jobs:
             path: /usr/bin:/bin:/usr/sbin:/sbin
           # A sudo that wants a password comes first on PATH, so setup.mjs takes the conda-forge route.
           - os: ubuntu-latest
+            nosudo: true
+            path: $RUNNER_TEMP/nosudo:/usr/bin:/bin:/usr/sbin:/sbin
+          - os: ubuntu-24.04-arm
             nosudo: true
             path: $RUNNER_TEMP/nosudo:/usr/bin:/bin:/usr/sbin:/sbin
           - os: macos-latest
@@ -115,3 +118,51 @@ jobs:
           Set-Location C:\proj
           node "$env:GITHUB_WORKSPACE\setup.mjs"
           exit $LASTEXITCODE
+  # A real standard (non-admin) account, not an emulation: winget's all-users Node can't install, so Node goes to
+  # %LOCALAPPDATA%\ingot-node. A scheduled task runs the install as that user, since the runner itself is an admin.
+  windows-standard-user:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Take Node off the saved PATH
+        shell: powershell
+        run: |
+          foreach ($scope in 'Machine', 'User') {
+            $kept = [Environment]::GetEnvironmentVariable('Path', $scope) -split ';' | Where-Object { $_ -and $_ -notmatch 'nodejs|\\npm|hostedtoolcache' }
+            [Environment]::SetEnvironmentVariable('Path', ($kept -join ';'), $scope)
+          }
+      - name: Install as a standard user
+        shell: powershell
+        run: |
+          $script = Get-Content -Raw install.ps1
+          if ($script -notmatch 'refs/heads/stable') { throw 'install.ps1 no longer downloads refs/heads/stable; update this test' }
+          New-Item -ItemType Directory C:\std | Out-Null
+          $script -replace 'refs/heads/stable', $env:GITHUB_SHA -replace 'ingot-stable', "ingot-$env:GITHUB_SHA" | Set-Content C:\std\install.ps1
+          # --no-tools: Python, ffmpeg and yt-dlp come from winget, which a new account may not have yet.
+          @'
+          $env:Path = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [Environment]::GetEnvironmentVariable('Path', 'User')
+          New-Item -ItemType Directory "$env:USERPROFILE\proj" -Force | Out-Null
+          Set-Location "$env:USERPROFILE\proj"
+          $code = 1
+          try {
+            $admin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole('Administrators')
+            "user: $env:USERNAME, admin: $admin"
+            & ([scriptblock]::Create((Get-Content -Raw C:\std\install.ps1))) --no-tools
+            $code = $LASTEXITCODE
+            $node = (Get-Command node -ErrorAction SilentlyContinue).Source
+            "node: $node"
+            if ($admin) { 'This test needs a standard user.'; $code = 1 }
+            elseif ($node -notlike "$env:LOCALAPPDATA\ingot-node\*") { 'Node is not the private one.'; $code = 1 }
+          } catch { $_ } finally { Set-Content C:\std\exit.txt $code }
+          '@ | Set-Content C:\std\run.ps1
+          $pass = 'Ig' + [guid]::NewGuid().ToString('N').Substring(0, 14) + '!'
+          net user ingotstd $pass /add | Out-Null
+          icacls C:\std /grant 'ingotstd:(OI)(CI)M' | Out-Null
+          schtasks /create /tn ingotstd /ru ingotstd /rp $pass /sc once /st 00:00 /f /rl LIMITED `
+            /tr 'powershell -NoProfile -ExecutionPolicy Bypass -Command "& C:\std\run.ps1 *> C:\std\log.txt"' | Out-Null
+          schtasks /run /tn ingotstd | Out-Null
+          $deadline = (Get-Date).AddMinutes(20)
+          while (-not (Test-Path C:\std\exit.txt) -and (Get-Date) -lt $deadline) { Start-Sleep 10 }
+          if (Test-Path C:\std\log.txt) { Get-Content C:\std\log.txt }
+          if (-not (Test-Path C:\std\exit.txt)) { throw 'The install did not finish within 20 minutes' }
+          exit [int](Get-Content C:\std\exit.txt)
