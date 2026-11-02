@@ -159,12 +159,23 @@ jobs:
           $pass = 'Ig' + [guid]::NewGuid().ToString('N').Substring(0, 14) + '!'
           New-LocalUser ingotstd -Password (ConvertTo-SecureString $pass -AsPlainText -Force) -PasswordNeverExpires | Out-Null
           icacls C:\std /grant 'ingotstd:(OI)(CI)M' | Out-Null
+          # Scheduled tasks need "Log on as a batch job", which standard users don't have by default.
+          $sid = (Get-LocalUser ingotstd).SID.Value
+          secedit /export /cfg C:\std\sec.inf /areas USER_RIGHTS | Out-Null
+          $inf = Get-Content C:\std\sec.inf
+          if ($inf -match '^SeBatchLogonRight') { $inf = $inf -replace '^(SeBatchLogonRight = .*)$', "`$1,*$sid" }
+          else { $inf = $inf -replace '^\[Privilege Rights\]$', "[Privilege Rights]`r`nSeBatchLogonRight = *$sid" }
+          $inf | Set-Content C:\std\sec.inf -Encoding Unicode
+          secedit /configure /db C:\std\sec.sdb /cfg C:\std\sec.inf /areas USER_RIGHTS | Out-Null
           $action = New-ScheduledTaskAction -Execute powershell.exe -Argument '-NoProfile -ExecutionPolicy Bypass -Command "& C:\std\run.ps1 *> C:\std\log.txt"'
           Register-ScheduledTask ingotstd -Action $action -User ingotstd -Password $pass -RunLevel Limited | Out-Null
           Start-ScheduledTask ingotstd
           $deadline = (Get-Date).AddMinutes(20)
+          # 267011: the task hasn't started yet; give it 2 minutes to.
+          $startBy = (Get-Date).AddMinutes(2)
           do { Start-Sleep 10 } while (-not (Test-Path C:\std\exit.txt) -and (Get-Date) -lt $deadline -and
-            (Get-ScheduledTask ingotstd).State -ne 'Ready')
+            ((Get-ScheduledTask ingotstd).State -eq 'Running' -or
+             ((Get-ScheduledTaskInfo ingotstd).LastTaskResult -eq 267011 -and (Get-Date) -lt $startBy)))
           Start-Sleep 2
           if (-not (Test-Path C:\std\exit.txt)) { "Task result: $((Get-ScheduledTaskInfo ingotstd).LastTaskResult)" }
           if (Test-Path C:\std\log.txt) { Get-Content C:\std\log.txt }
