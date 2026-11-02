@@ -49,6 +49,8 @@ for (const [surface, expect, absent] of [['cli', '`/plan <task>`', 'mode menu'],
     check(!/\{(cli|desktop)\}/.test(c), `session hook (${surface}, ${coach}): a {cli}/{desktop} tag was left in`);
     check(c.includes(expect) && !c.includes(absent), `session hook (${surface}, ${coach}): wrong surface's tips`);
     check(c.length < 10000, `session hook (${surface}, ${coach}): ${c.length} chars, over Claude Code's 10,000 limit`);
+    check(!/^\[\w+\] /m.test(c) && c.includes(`Coaching is ${coach}:`) && (c.match(/Coaching is \w+:/g) ?? []).length === 1,
+      `session hook (${surface}, ${coach}): not exactly this level's line`);
   }
 }
 check(hook('session-rules.mjs', ['SubagentStart'], {}).includes('## Working rules'), 'subagent hook: no rules');

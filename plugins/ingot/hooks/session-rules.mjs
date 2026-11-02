@@ -64,11 +64,12 @@ try {
   let context = read(sub ? 'subagent.md' : 'rules.md');
   if (!sub) {
     for (const c of categories()) context += read(`categories/${c}.md`);
-    // Coaching: off, light, full (default) or extra; extra adds to full. Reply style: off, lite (default) or core.
+    // Coaching: off, light, full (default) or extra. Every level gets the same tips; a line starting `[level]`
+    // says how often that level speaks up. Reply style: off, lite (default) or core.
     const coach = pick('COACH', ['off', 'light', 'full', 'extra'], 'full');
-    if (coach === 'light') context += read('coach/light.md');
-    if (coach === 'full' || coach === 'extra') context += read('coach/full.md');
-    if (coach === 'extra') context += read('coach/extra.md');
+    if (coach !== 'off') context += read('coach/tips.md').split('\n')
+      .filter((l) => !/^\[(light|full|extra)\] /.test(l) || l.startsWith(`[${coach}] `))
+      .map((l) => l.replace(/^\[\w+\] /, '')).join('\n');
     const style = pick('STYLE', ['off', 'lite', 'core'], 'lite');
     if (style !== 'off') context += read(`style/${style}.md`);
     // Offers only on a fresh start, so /clear and /compact don't repeat them.

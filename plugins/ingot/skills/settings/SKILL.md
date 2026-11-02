@@ -10,7 +10,7 @@ disable-model-invocation: true
 | Setting | Values | Default | Stored in |
 |---|---|---|---|
 | `style` | `off`; `lite` (answer first, numbered steps); `core` (full ADHD-friendly set) | `lite` | `~/.claude/settings.json` as `env.INGOT_STYLE` |
-| `coach` | `off`; `light` (3 key tips); `full` (core tips); `extra` (also suggests any fitting slash command) | `full` | `~/.claude/settings.json` as `env.INGOT_COACH` |
+| `coach` | `off`; `light` (a tip only when it really matters); `full` (when it clearly helps, 1 per reply); `extra` (anything helpful, up to 2 per reply) | `full` | `~/.claude/settings.json` as `env.INGOT_COACH` |
 | `category` | one or more of `coding`, `content`, `agentic`, `research` | auto (coding if code is found) | this project's `.claude/settings.json` as `env.INGOT_CATEGORY` |
 
 1. **With no arguments,** show the current values from those files, using the defaults for anything unset. Then ask which one to change.

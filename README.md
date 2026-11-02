@@ -108,16 +108,16 @@ Until a project has been specialized, Claude assumes coding if it finds code, an
 - **Only what was asked.**
 - **Ask once, with batched questions, when it really matters.**
 
-On top of those come the project's category rules, coaching, the reply style and at most one project offer. With the defaults that is about 700 to 850 tokens, plus about 350 for the short descriptions of Ingot's commands that Claude Code lists. With every category, the `core` style and `extra` coaching it tops out near 1,800 plus that list. Helper agents that Claude starts get only three lines (about 80 tokens).
+On top of those come the project's category rules, coaching, the reply style and at most one project offer. With the defaults that is about 900 to 1,050 tokens, plus about 350 for the short descriptions of Ingot's commands that Claude Code lists. With every category, the `core` style and `extra` coaching it tops out near 1,650 plus that list. Helper agents that Claude starts get only three lines (about 80 tokens).
 
-**Coaching.** Claude does the pro move itself when it can. When a move needs you, it ends a reply with a `Tip:` line, and only when that tip's moment has just happened. Each tip appears at most once per session. There are four levels:
+**Coaching.** Claude does the pro move itself when it can. When a move needs you, it ends a reply with a `Tip:` line, and only when that tip's moment has just happened. Each tip appears at most once per session. Every level knows the same tips, such as `/plan` for big tasks, `/clear` after two failed corrections, `/code-review` before you ship, the installed skill or free pack that fits the task, and any command, connector or app feature that helps right now. Tips are suggestions, not fixed rules: Claude weighs how much each would help in the moment. The level sets how readily it speaks up:
 
-| Level | What Claude coaches |
+| Level | How often Claude gives a tip |
 |---|---|
-| `off` | nothing |
-| `light` | `/plan` for big tasks, `/clear` after two failed corrections, `/code-review` before you ship |
-| `full` (default) | the core habits: also `/compact`, `/clear` between tasks, `@`-mentioning files, screenshots for visual work, `/watch`, Learning mode when you want to learn to code, checkpoint commits, `/security-review`, `/verify`, and saving repeated tasks as skills |
-| `extra` | any slash command that fits the moment, such as `/rewind`, `/btw`, `/context`, `/model`, `/goal` or `/loop`, up to two tips per reply |
+| `off` | never |
+| `light` | only when it really matters, because skipping it would cost you real time, work or quality; most replies have none |
+| `full` (default) | whenever one would clearly help, at most one per reply |
+| `extra` | whenever anything would help, up to two per reply |
 
 In the terminal, habits that don't need timing appear as spinner tips while Claude works, which costs no context. One example: Esc twice undoes Claude's file edits.
 
