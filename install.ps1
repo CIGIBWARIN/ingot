@@ -63,6 +63,14 @@ $setupArgs = $args
 
     Update-SessionPath
     # Claude Code on Windows needs Git for Windows (it uses Git Bash).
+    # Git can be installed but off PATH (its "Git Bash only" option); winget then says it's installed and does nothing.
+    if (-not (Test-Command 'git')) {
+        $gitCmd = "$env:ProgramFiles\Git\cmd", "$env:LOCALAPPDATA\Programs\Git\cmd" | Where-Object { Test-Path (Join-Path $_ 'git.exe') } | Select-Object -First 1
+        if ($gitCmd) {
+            [Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', 'User') + ";$gitCmd", 'User')
+            Update-SessionPath
+        }
+    }
     if (-not (Test-Command 'git')) { Invoke-Winget 'install' 'Git.Git' 'Git' 'https://git-scm.com/download/win' { Test-Command 'git' } }
     if (-not (Test-Node)) {
         try {

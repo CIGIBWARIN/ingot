@@ -1,7 +1,8 @@
 # Runs the install line on clean machines, with this commit's setup.mjs instead of the stable branch's.
 # Linux has no Node, and once more without working sudo, Python or ffmpeg (a user without admin rights), on Intel
 # and on Arm; macOS has no Node, with Homebrew on Apple Silicon and without it on Intel (Apple's Python 3.9, no ffmpeg);
-# Windows has no Node, Git or Python, and once more as a real standard user, whose Node goes to its own folder.
+# Windows has no Node or Python and Git off PATH (installed but not found, which the installer fixes), and once more
+# as a real standard user, whose Node goes to its own folder.
 # Windows also runs with an outdated Node first on PATH (the way nvm-windows, Volta or Scoop leave one), and without
 # winget, which takes the same path as a PC without admin rights: winget's Node is machine-wide and needs admin.
 # Passing means setup.mjs exited 0: it checks with `claude plugin list` that every plugin really is installed.
@@ -156,13 +157,16 @@ jobs:
           } catch { $_ } finally { Set-Content C:\std\exit.txt $code }
           '@ | Set-Content C:\std\run.ps1
           $pass = 'Ig' + [guid]::NewGuid().ToString('N').Substring(0, 14) + '!'
-          net user ingotstd $pass /add | Out-Null
+          New-LocalUser ingotstd -Password (ConvertTo-SecureString $pass -AsPlainText -Force) -PasswordNeverExpires | Out-Null
           icacls C:\std /grant 'ingotstd:(OI)(CI)M' | Out-Null
-          schtasks /create /tn ingotstd /ru ingotstd /rp $pass /sc once /st 00:00 /f /rl LIMITED `
-            /tr 'powershell -NoProfile -ExecutionPolicy Bypass -Command "& C:\std\run.ps1 *> C:\std\log.txt"' | Out-Null
-          schtasks /run /tn ingotstd | Out-Null
+          $action = New-ScheduledTaskAction -Execute powershell.exe -Argument '-NoProfile -ExecutionPolicy Bypass -Command "& C:\std\run.ps1 *> C:\std\log.txt"'
+          Register-ScheduledTask ingotstd -Action $action -User ingotstd -Password $pass -RunLevel Limited | Out-Null
+          Start-ScheduledTask ingotstd
           $deadline = (Get-Date).AddMinutes(20)
-          while (-not (Test-Path C:\std\exit.txt) -and (Get-Date) -lt $deadline) { Start-Sleep 10 }
+          do { Start-Sleep 10 } while (-not (Test-Path C:\std\exit.txt) -and (Get-Date) -lt $deadline -and
+            (Get-ScheduledTask ingotstd).State -ne 'Ready')
+          Start-Sleep 2
+          if (-not (Test-Path C:\std\exit.txt)) { "Task result: $((Get-ScheduledTaskInfo ingotstd).LastTaskResult)" }
           if (Test-Path C:\std\log.txt) { Get-Content C:\std\log.txt }
-          if (-not (Test-Path C:\std\exit.txt)) { throw 'The install did not finish within 20 minutes' }
+          if (-not (Test-Path C:\std\exit.txt)) { throw 'The install stopped without finishing, or ran past 20 minutes' }
           exit [int](Get-Content C:\std\exit.txt)
