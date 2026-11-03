@@ -540,7 +540,9 @@ if (has('--prune')) finish(prune(), 'Not pruned:');
 if (!userMode && notAProject(cwd)) {
   console.error(`This folder (${cwd}) holds your files rather than one project.\n` +
     'Open the terminal in a project folder first (for a new project, make a new empty folder), then run this again.\n' +
-    'To turn Ingot on for every project on this PC instead, add --user.');
+    'To turn Ingot on for every project on this PC instead, run:\n  ' + (isWin
+      ? '& ([scriptblock]::Create((irm https://raw.githubusercontent.com/CIGIBWARIN/ingot/stable/install.ps1))) --user'
+      : 'curl -fsSL https://raw.githubusercontent.com/CIGIBWARIN/ingot/stable/install.sh | bash -s -- --user'));
   process.exit(1);
 }
 if (has('--remove')) {
