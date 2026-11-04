@@ -42,6 +42,7 @@ Type these inside Claude, in a project with Ingot. You only need to remember the
 | `/ingot:kickoff` | Asks what you're making, picks the simplest setup, and produces a real first result | the folder is empty, or you have a new idea |
 | `/ingot:specialize` | Sets the project's category, writes a short CLAUDE.md with the real commands or workflow, turns off tools the project doesn't use, suggests packs, and learns from your past sessions | an existing project Ingot hasn't tuned |
 | `/ingot:workflow` | Maps how the whole project gets done (not just the code) from evidence and a few questions, then applies only the improvements you approve | you ask to optimize or speed up how you work |
+| `/ingot:delegate` | Splits one request across several projects into briefed sessions or subagents (scope, what's off limits, a branch or restore copy, how done is checked), then checks each result itself | one task fans out to several projects or folders |
 | `/ingot:cleanup` | Saves a restore point, then fixes dead code, over-engineering, test slop, doc bloat, silent failures and hardcoded secrets, each verified and committed on its own | older code needs fixing |
 | `/ingot:build-to-target` | Pins a target (a screenshot, a page, an example), then builds, looks, compares and fixes until the real result matches | you're making something you'll look at or run |
 | `/ingot:launch-check` | Checks and fixes the 20 things websites usually miss (security, SEO, accessibility, speed, legal), and offers free hosting on GitHub Pages | you type it, before a site goes live |

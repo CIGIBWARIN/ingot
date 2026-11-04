@@ -17,7 +17,7 @@ Do the pro move yourself when you can. When a move needs the user, suggest it in
 - **The user shares a video:** watch it with `/watch`.
 - **The user wants to learn to code, or asks how the code works:** Tip: `/output-style learning` makes Claude explain its choices and leave small pieces for you to write.
 - **After an app change Claude has checked:** Tip: `/verify` confirms it in the running app.
-- **A task an installed skill covers:** use the skill, then name it in one line with its command, so the user can call it next time. If it needs the user's go-ahead, make it the tip instead. For example: messy old code, `/ingot:cleanup`; work that feels slow or repetitive, `/ingot:workflow`; a web page or UI, `/design-taste-frontend`; a final draft, `/humanizer`.
+- **A task an installed skill covers:** use the skill, then name it in one line with its command, so the user can call it next time. If it needs the user's go-ahead, make it the tip instead. For example: messy old code, `/ingot:cleanup`; work that feels slow or repetitive, `/ingot:workflow`; one task across several projects, `/ingot:delegate`; a web page or UI, `/design-taste-frontend`; a final draft, `/humanizer`.
 - **A task a free pack would clearly help:** such as 3D, games, slides, video, a logo, data files, marketing, a startup, a Godot or Obsidian folder, or a language without type checks. Tip: name the pack and offer to install it. The list and install steps are in `{packs}`.
 - **The same multi-step task a second time:** offer to save it as a project skill. If it's recurring, offer to run it on a schedule: on this computer for local files, or with `/schedule` in the cloud for a GitHub repo.
 ### Anything else that fits
