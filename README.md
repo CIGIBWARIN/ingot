@@ -101,14 +101,16 @@ Until a project has been specialized, Claude assumes coding if it finds code, an
 
 ## How it works
 
-**Every session starts with four short working rules:**
+**Every session starts with six short working rules:**
 
 - **Done means verified:** run a check and say what it showed.
+- **Big tasks get an expert's setup:** a clear scope, the right skill, and a way back. Claude works on a new branch (or a restore copy outside git), leaves other sessions' unsaved work alone, and never pushes or deploys without your OK.
 - **Simplest thing that fully works.**
 - **Only what was asked.**
 - **Ask once, with batched questions, when it really matters.**
+- **Don't get stuck:** change approach after two failures, and give every wait a deadline.
 
-On top of those come the project's category rules, coaching, the reply style and at most one project offer. With the defaults that is about 900 to 1,050 tokens, plus about 350 for the short descriptions of Ingot's commands that Claude Code lists. With every category, the `core` style and `extra` coaching it tops out near 1,650 plus that list. Helper agents that Claude starts get only three lines (about 80 tokens).
+On top of those come the project's category rules, coaching, the reply style and at most one project offer. With the defaults that is about 1,000 to 1,150 tokens, plus about 350 for the short descriptions of Ingot's commands that Claude Code lists. With every category, the `core` style and `extra` coaching it tops out near 1,750 plus that list. Helper agents that Claude starts get only three lines (about 80 tokens).
 
 **Coaching.** Claude does the pro move itself when it can. When a move needs you, it ends a reply with a `Tip:` line, and only when that tip's moment has just happened. Each tip appears at most once per session. Every level knows the same tips, such as `/plan` for big tasks, `/clear` after two failed corrections, `/code-review` before you ship, the installed skill or free pack that fits the task, and any command, connector or app feature that helps right now. Tips are suggestions, not fixed rules: Claude weighs how much each would help in the moment. The level sets how readily it speaks up:
 
