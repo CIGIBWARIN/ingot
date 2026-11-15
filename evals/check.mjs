@@ -68,6 +68,28 @@ fs.writeFileSync(path.join(tmp, 'docs', 'STATUS.md'), '');
 check(!docGuard('docs/STATUS.md'), 'doc-guard: reminder in a docs/ folder the project maintains');
 check(!docGuard('docs/archive/2026-10-10/progress-notes.md'), 'doc-guard: reminder for an archived copy');
 check(/asked, including any files or tests it names/.test(hook('session-rules.mjs', ['SubagentStart'], {})), 'subagent rules: helpers may not write the tests they were asked for');
+// Model notes: from the transcript's latest reply, once per model, again after a switch or a fresh context.
+const transcript = path.join(root, 'transcript.jsonl');
+const reply = (model) => fs.appendFileSync(transcript, JSON.stringify({ type: 'assistant', message: { model } }) + '\n');
+const sid = `check-${process.pid}`;
+const notes = (env) => hook('model-notes.mjs', [], { session_id: sid, transcript_path: transcript }, { ANTHROPIC_MODEL: '', ...env });
+check(notes({ ANTHROPIC_MODEL: 'claude-fable-5-2' }).includes('## On Fable 5.2'), 'model notes: none from the configured model on the first prompt');
+check(!notes({ ANTHROPIC_MODEL: 'claude-fable-5-2' }), 'model notes: repeated for the same model');
+reply('claude-opus-5-5');
+check(notes().includes('## On Opus 5.5'), 'model notes: none after switching to Opus');
+reply('<synthetic>');
+check(!notes(), 'model notes: a synthetic entry counted as a model switch');
+hook('session-rules.mjs', [], { source: 'compact', session_id: sid });
+check(notes().includes('## On Opus 5.5'), 'model notes: not added again after /compact');
+reply('claude-haiku-5-5');
+check(!notes(), 'model notes: notes for a model that has none');
+const sid2 = `${sid}-b`, notes2 = () => hook('model-notes.mjs', [], { session_id: sid2, transcript_path: path.join(root, 'none.jsonl') }, { ANTHROPIC_MODEL: '' });
+const first = notes2();
+check(first.includes('## On Fable 5.2') && first.includes('## On Opus 5.5') && first.includes('model you are'), 'model notes: an unknown model did not get every labeled section');
+fs.writeFileSync(path.join(root, 'none.jsonl'), JSON.stringify({ message: { model: 'claude-opus-5-5' } }) + '\n');
+check(!notes2(), 'model notes: repeated once the model became known after the all-models notes');
+fs.rmSync(path.join(os.tmpdir(), `ingot-model-${sid2}`), { force: true });
+fs.rmSync(path.join(os.tmpdir(), `ingot-model-${sid}`), { force: true });
 fs.rmSync(root, { recursive: true, force: true });
 
 if (problems.length) {
