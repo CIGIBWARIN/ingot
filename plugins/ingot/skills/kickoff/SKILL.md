@@ -19,7 +19,7 @@ Skip anything the user already said.
 
 ## 2. Pick the simplest setup
 
-- **Coding:** use the fewest moving parts, such as plain HTML/CSS/JS before a framework and one file before many. Add a database only when data must persist across users or devices, and prefer tools the user already has.
+- **Coding:** use the fewest moving parts, such as plain HTML/CSS/JS before a framework and one file before many. Add a database only when data must persist across users or devices, and prefer tools the user already has. A site starts with one shared stylesheet for design tokens and base styles, plus a folder per page or feature holding its own markup, styles and scripts.
 - **Content:** a few folders (`drafts/`, `final/`, `assets/`) plus a voice and audience note in CLAUDE.md.
 - **Agentic:** one script or workflow file, a dry-run mode, and a log of what each run did. Recurring jobs on local files run with the OS scheduler (or a desktop app scheduled task); `/schedule` is for cloud runs on a GitHub repo.
 - **Research:** `sources/` or `data/` for inputs and one output file, with every claim sourced.
