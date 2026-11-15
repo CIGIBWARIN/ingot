@@ -68,6 +68,28 @@ fs.writeFileSync(path.join(tmp, 'docs', 'STATUS.md'), '');
 check(!docGuard('docs/STATUS.md'), 'doc-guard: reminder in a docs/ folder the project maintains');
 check(!docGuard('docs/archive/2026-10-10/progress-notes.md'), 'doc-guard: reminder for an archived copy');
 check(/asked, including any files or tests it names/.test(hook('session-rules.mjs', ['SubagentStart'], {})), 'subagent rules: helpers may not write the tests they were asked for');
+// Model notes: every model's, labeled, until the transcript shows the model; then that model's once, and again after a switch or reset.
+const transcript = path.join(root, 'transcript.jsonl');
+const said = (model) => fs.appendFileSync(transcript, `${JSON.stringify({ type: 'assistant', message: { model, content: [] } })}\n`);
+const prompt = { session_id: `check-${process.pid}`, transcript_path: transcript };
+const notes = () => hook('model-notes.mjs', [], prompt, { ANTHROPIC_MODEL: '' });
+fs.writeFileSync(transcript, '');
+const first = notes();
+check(['Fable 5.2', 'Opus 5.5', 'Sonnet 5.5'].every((m) => first.includes(`### Claude ${m}`)), 'model notes: first prompt lacks a labeled set per model');
+check(first.length < 10000, `model notes: ${first.length} chars, over Claude Code's 10,000 limit`);
+check(notes() === '', 'model notes: the labeled set was added twice before the model was known');
+said('claude-fable-5-2');
+const fable = notes();
+check(fable.includes('Notes for Claude Fable 5.2') && fable.includes('owner and long-term maintainer') && !fable.includes('Sonnet'), 'model notes: no Fable-only notes once Fable replied');
+check(notes() === '', 'model notes: repeated for the same model');
+said('<synthetic>');
+check(notes() === '', 'model notes: a synthetic message counted as a model switch');
+said('claude-sonnet-5-5');
+check(notes().includes('Notes for Claude Sonnet 5.5'), 'model notes: not re-added after a switch to Sonnet');
+hook('model-notes.mjs', ['reset'], prompt);
+check(notes().includes('Notes for Claude Sonnet 5.5'), 'model notes: not re-added after /clear or /compact');
+said('claude-haiku-5-5');
+check(notes() === '', 'model notes: notes for a model without a guide');
 fs.rmSync(root, { recursive: true, force: true });
 
 if (problems.length) {

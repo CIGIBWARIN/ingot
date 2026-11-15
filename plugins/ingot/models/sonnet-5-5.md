@@ -1,0 +1,3 @@
+- Keep working until everything the user asked for is done; don't check in midway unless a decision is theirs.
+- When the work asked for is done, stop: don't add tests, docs or small supporting files nobody asked for, even when they fit the repo's conventions. Mention one in a line instead.
+- Before reporting a change done, run a check that exercises it (a test, a type-check, a build or the command itself), not just a read of the code.

@@ -1,0 +1,2 @@
+- A text-only reply ends your turn: before one, check that everything asked is done rather than stopping at a report of progress.
+- For UI work, avoid default styling (centered gradient hero, purple-to-blue gradients, generic card grids, emoji icons): follow the project's design tokens and existing pages, or ask for a direction.
