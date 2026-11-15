@@ -1,5 +1,5 @@
-// SessionStart / SubagentStart (event name as argv[2]): inject the working rules, the project's category rules,
-// coaching, reply style and at most one project offer. Helper agents get only the short subagent rules.
+// SessionStart / SubagentStart: inject the working rules and the project's category rules, and (argv[2] = coach)
+// coaching, reply style and at most one project offer. Helper agents (argv[2] = SubagentStart) get only the short subagent rules.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -58,14 +58,20 @@ function offer() {
 }
 
 try {
-  const sub = process.argv[2] === 'SubagentStart';
+  // Claude Code caps each hook's context at 10,000 characters, so a session start runs this twice:
+  // once for the rules and category rules, once (argv[2] = coach) for coaching, reply style and the offer.
+  const part = process.argv[2] ?? 'rules';
+  const sub = part === 'SubagentStart';
   let input = {};
   try { input = JSON.parse(fs.readFileSync(0, 'utf8') || '{}'); } catch {}
-  let context = read(sub ? 'subagent.md' : 'rules.md');
-  if (!sub) {
+  let context = '';
+  if (sub) context = read('subagent.md');
+  else if (part === 'rules') {
+    context = read('rules.md');
     // A fresh context: model-notes.mjs adds the model's notes again on the next prompt.
     if (input.session_id) fs.rmSync(modelState(input.session_id), { force: true });
     for (const c of categories()) context += read(`categories/${c}.md`);
+  } else {
     // Coaching: off, light, full (default) or extra. Every level gets the same tips; a line starting `[level]`
     // says how often that level speaks up. Reply style: off, lite (default) or core.
     const coach = pick('COACH', ['off', 'light', 'full', 'extra'], 'full');
@@ -77,7 +83,7 @@ try {
     // Offers only on a fresh start, so /clear and /compact don't repeat them.
     if (!input.source || input.source === 'startup') context += offer();
   }
-  process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: sub ? 'SubagentStart' : 'SessionStart', additionalContext: context } }));
+  if (context) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: sub ? 'SubagentStart' : 'SessionStart', additionalContext: context } }));
 } catch {
   // Never block a session over a missing rules file.
 }

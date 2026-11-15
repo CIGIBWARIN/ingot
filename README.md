@@ -86,7 +86,7 @@ The desktop app doesn't load plugins in WSL sessions, so open Windows folders di
 
 | Category | For | Its rules |
 |---|---|---|
-| **coding** | apps, sites, scripts, extensions | Tests only where things can break. Code lives with what uses it, shared once a second page needs it, in files split by feature. To-do lists change in the same commit as the work. Comments match the code around them. Look at the real result. |
+| **coding** | apps, sites, scripts, extensions | Tests only where things can break. Code lives with what uses it, shared once a second page needs it, in files split by feature. To-do lists change in the same commit as the work. Comments only where the code can't say why. Look at the real result. |
 | **content** | writing, social, newsletters, video, visual design | Match the existing voice. Never invent quotes or stats. Humanizer pass on final drafts. `/watch` for video references. |
 | **agentic** | automations, ops, scheduled and browser tasks | Preview and confirm before anything that touches the outside world. Safe re-runs, a log of each run, `/schedule` for recurring work. |
 | **research** | sources, data, analysis, reports | Every claim sourced. Facts and opinions kept apart. Raw data left untouched, and the working for every number shown. |
@@ -112,9 +112,9 @@ Until a project has been specialized, Claude assumes coding if it finds code, an
 - **Don't get stuck:** change approach after two failures, and give every wait a deadline.
 - **Delegate by job, on the cheapest model that can do it:** helpers run on Haiku, Sonnet, Opus or Fable by what each job needs, instead of all inheriting yours.
 
-On top of those come the project's category rules, coaching, the reply style and at most one project offer. With the defaults that is about 1,000 to 1,150 tokens, plus about 350 for the short descriptions of Ingot's commands that Claude Code lists. With every category, the `core` style and `extra` coaching it tops out near 1,750 plus that list. Helper agents that Claude starts get only five lines (about 120 tokens).
+On top of those come the project's category rules, coaching, the reply style and at most one project offer. With the defaults that is about 1,250 to 1,400 tokens, plus about 350 for the short descriptions of Ingot's commands that Claude Code lists. With every category, the `core` style and `extra` coaching it tops out near 2,000 plus that list, sent as two hook outputs because Claude Code caps each at 10,000 characters. Helper agents that Claude starts get only six lines (about 130 tokens).
 
-**Model notes.** Each model has its own habits, so Ingot adds a few lines for the one answering, taken from Anthropic's prompting guide for it. Fable 5.2 is told the code is its own, so it merges code it would otherwise copy, and it's told to finish the whole task and list every change. Opus 5.5 looks around before changing anything and avoids its default frontend looks. Sonnet 5.5 runs a real check before calling code done and searches for anything that may have changed since it was trained. Hooks aren't told the model, so the first prompt gets every model's notes (about 300 tokens) and Claude, which knows its own model, applies only its section. After that Ingot reads the model from the session and adds notes again only after `/model` switches it, or after `/clear` or `/compact`.
+**Model notes.** Each model has its own habits, so Ingot adds two or three lines for the one answering, taken from Anthropic's prompting guide for it. Fable 5.2 merges code it would otherwise copy and names every file it changed. Opus 5.5 looks around before changing anything and avoids its default frontend looks. Sonnet 5.5 runs a real check before calling code done and searches for anything that may have changed since it was trained. Hooks aren't told the model, so the first prompt gets every model's notes (about 250 tokens) and Claude, which knows its own model, applies only its section. After that Ingot reads the model from the session and adds notes again only after `/model` switches it, or after `/clear` or `/compact`.
 
 **Coaching.** Claude does the pro move itself when it can. When a move needs you, it ends a reply with a `Tip:` line, and only when that tip's moment has just happened. Each tip appears at most once per session. Every level knows the same tips, such as `/plan` for big tasks, `/clear` after two failed corrections, `/code-review` before you ship, the installed skill or free pack that fits the task, and any command, connector or app feature that helps right now. Tips are suggestions, not fixed rules: Claude weighs how much each would help in the moment. The level sets how readily it speaks up:
 
@@ -127,7 +127,7 @@ On top of those come the project's category rules, coaching, the reply style and
 
 In the terminal, habits that don't need timing appear as spinner tips while Claude works, which costs no context. One example: Esc twice undoes Claude's file edits.
 
-**Reply style.** `lite` is the default: the answer comes first, steps are numbered, progress is said plainly. `core` is a full ADHD-friendly set, with the next action first, state restated each turn, visible wins and lists of 5 items at most. `off` turns both off.
+**Reply style.** `lite` is the default: the answer comes first, steps are numbered, progress is said plainly, and Claude doesn't narrate between tool calls. `core` is a full ADHD-friendly set, with the next action first, state restated each turn, visible wins and lists of 5 items at most. `off` turns both off.
 
 **Settings.** Change the reply style, coaching level or category with `/ingot:settings`. Changes apply from the next session.
 
