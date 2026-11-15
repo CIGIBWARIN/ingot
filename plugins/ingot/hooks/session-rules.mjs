@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { safeList, isCodeProject } from './project.mjs';
+import { safeList, isCodeProject, modelState } from './project.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 // The desktop app's Code tab swaps some terminal commands for its own menus. A line ending in {cli} or {desktop}
@@ -63,6 +63,8 @@ try {
   try { input = JSON.parse(fs.readFileSync(0, 'utf8') || '{}'); } catch {}
   let context = read(sub ? 'subagent.md' : 'rules.md');
   if (!sub) {
+    // A fresh context: model-notes.mjs adds the model's notes again on the next prompt.
+    if (input.session_id) fs.rmSync(modelState(input.session_id), { force: true });
     for (const c of categories()) context += read(`categories/${c}.md`);
     // Coaching: off, light, full (default) or extra. Every level gets the same tips; a line starting `[level]`
     // says how often that level speaks up. Reply style: off, lite (default) or core.

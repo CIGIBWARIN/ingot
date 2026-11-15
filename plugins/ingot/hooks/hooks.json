@@ -34,6 +34,17 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/model-notes.mjs\"",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }

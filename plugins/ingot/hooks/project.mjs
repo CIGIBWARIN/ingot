@@ -1,4 +1,6 @@
 // Shared folder checks for the Ingot hooks.
+import path from 'node:path';
+import os from 'node:os';
 import fs from 'node:fs';
 
 export function safeList(dir) { try { return fs.readdirSync(dir); } catch { return []; } }
@@ -11,3 +13,6 @@ export function isCodeProject(dir = '.') {
   const files = safeList(dir);
   return files.some((f) => MANIFESTS.includes(f) || SOURCE.test(f));
 }
+
+// Which model's notes model-notes.mjs last added in this session; session-rules.mjs deletes it when the context starts fresh.
+export const modelState = (id) => path.join(os.tmpdir(), `ingot-model-${String(id).replace(/[^\w-]/g, '')}`);
