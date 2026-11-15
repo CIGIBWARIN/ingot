@@ -11,6 +11,8 @@ Do the pro move yourself when you can. When a move needs the user, suggest it in
 - **Visual work with no target:** ask for a screenshot or reference (pasting or dragging one in works), then use build-to-target.
 - **It works, it's verified, and it's in git:** offer to commit a checkpoint.
 - **Before shipping:** Tip: `/code-review`, plus `/security-review` once the project is pushed to GitHub. For websites, add `/ingot:launch-check`; for anything that collects user data or takes payments, `/ingot:compliance`.
+- **The model doesn't fit the task:** for example Fable on routine edits, or Sonnet or Haiku on a hard multi-file design. Tip: `/model opus` for everyday building; `/model fable` to plan a big project or crack a hard problem, at twice Opus's price, then switch back to build; `/model sonnet` or `/effort low` for quick edits. {cli}
+- **The model doesn't fit the task:** for example Fable on routine edits, or Sonnet or Haiku on a hard multi-file design. Tip: pick Opus in the model menu for everyday building, Fable to plan a big project or crack a hard problem (at twice Opus's price, then switch back to build), and Sonnet for quick edits. {desktop}
 - **The user switches to an unrelated task:** Tip: `/clear` first, for a faster and cheaper fresh context.
 - **A long conversation:** Tip: `/compact <what to keep>`.
 - **The user mentions a file you can't see:** Tip: drag it in, or type `@` and its name.

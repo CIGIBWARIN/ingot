@@ -1,12 +1,19 @@
 ---
 name: launch-check
-description: Pre-launch checklist for a website. Checks and fixes the 20 things sites usually miss (security, SEO, accessibility, speed, legal, forms) and reports pass, fixed, or needs a decision for each.
+description: Pre-launch checklist for a website. Runs a code review and a security review, checks and fixes the 20 things sites usually miss (security, SEO, accessibility, speed, legal, forms), and reports pass, fixed, or needs a decision for each.
 disable-model-invocation: true
 ---
 
 # Launch check
 
 Go through every item. For each one, first check whether it's already done, then fix it if you can, then verify the fix. Skip any item that doesn't apply, and say why in one line. Don't redo work that's already done.
+
+## Reviews
+Run these first, so later fixes don't hide what they find.
+- **Code review:** run the `code-review` skill with the site's folder as its target, at `high`. Fix its correctness findings and verify each fix.
+- **Security review:** run the `security-review` skill. It reviews the branch's changes, so on a site that's already committed, also go through items 1 to 4 below by hand across the whole codebase. Fix what's safe to fix; anything that changes how people sign in or pay is a decision for the user.
+
+In the report, add one line per finding, with the same marks as the items.
 
 ## Security
 1. **Secrets off the frontend.** Search the client bundle and the repo for keys and tokens. Move them server-side or into env vars.
