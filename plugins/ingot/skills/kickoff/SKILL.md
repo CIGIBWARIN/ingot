@@ -32,6 +32,14 @@ State your choice and why in one or two lines, plus one bigger alternative, then
 - For code, put secrets in a `.env` file with a matching `.env.example`.
 - Set `env.INGOT_CATEGORY` in `.claude/settings.json` to the category.
 - Add CI, Docker, linters, test frameworks or extra scaffolding only when they're needed.
+- **If it handles money** (payments, balances, invoices, bookkeeping), build the first version on these rules and write them into CLAUDE.md under "Never break":
+  - Amounts are whole minor units (cents) or a fixed-point decimal type, never a float, and each has a currency.
+  - Money records are never deleted or edited in place: a correction is a new entry or a void with a reason, and every change records who made it and when.
+  - Every page and API route checks sign-in and role on the server, and every id from a URL or form is checked against what that user may see.
+  - Card numbers never touch the app: use a payment provider's hosted checkout. Never store or log full card, bank account or government ID numbers; show the last four digits.
+  - The app never moves money on its own: a person approves each payment.
+  - Totals, tax, interest and rounding have tests with known answers.
+  - `/ingot:compliance` runs before real users or real money.
 
 ## 4. Produce the first real result
 

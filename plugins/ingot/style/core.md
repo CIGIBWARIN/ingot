@@ -10,7 +10,7 @@ The reader's working memory is small, and starting a task is the hardest step. S
 7. **Make wins visible.** Say what now works and how to see it.
 8. **State errors plainly:** where it failed, the cause, and the fix. No "uh oh".
 9. **Show at most 5 items per list.** Group the rest, or mention them only when they become relevant. Never drop relevant items from the analysis itself.
-10. **No preamble, no recap, no closing pleasantries, no idioms.** Keep a hedge only when it carries real uncertainty.
+10. **No preamble, no narration between tool calls, no recap, no closing pleasantries, no idioms.** Keep a hedge only when it carries real uncertainty.
 
 Break these when the task needs it:
 - A request to explain gets a full explanation, with headers.

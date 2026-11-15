@@ -43,19 +43,21 @@ const hook = (file, args, input, env = {}) => {
 };
 for (const [surface, expect, absent] of [['cli', '`/plan <task>`', 'mode menu'], ['claude-desktop', 'mode menu', '`/plan <task>`']]) {
   for (const coach of ['light', 'full', 'extra']) {
-    const c = hook('session-rules.mjs', [], { source: 'startup' }, { CLAUDE_CODE_ENTRYPOINT: surface, INGOT_COACH: coach, INGOT_STYLE: 'core' });
+    const env = { CLAUDE_CODE_ENTRYPOINT: surface, INGOT_COACH: coach, INGOT_STYLE: 'core', INGOT_CATEGORY: 'coding,content,agentic,research' };
+    const parts = [hook('session-rules.mjs', [], { source: 'startup' }, env), hook('session-rules.mjs', ['coach'], { source: 'startup' }, env)];
+    const c = parts.join('');
     check(c.includes('## Working rules'), `session hook (${surface}, ${coach}): no working rules`);
     check(c.includes('## Coding'), `session hook (${surface}, ${coach}): a code project got no coding rules`);
     check(!/\{(cli|desktop)\}/.test(c), `session hook (${surface}, ${coach}): a {cli}/{desktop} tag was left in`);
     check(c.includes(expect) && !c.includes(absent), `session hook (${surface}, ${coach}): wrong surface's tips`);
-    check(c.length < 10000, `session hook (${surface}, ${coach}): ${c.length} chars, over Claude Code's 10,000 limit`);
+    for (const part of parts) check(part.length < 9000, `session hook (${surface}, ${coach}): one part is ${part.length} chars, too near Claude Code's 10,000 limit per hook`);
     check(!/^\[\w+\] /m.test(c) && c.includes(`Coaching is ${coach}:`) && (c.match(/Coaching is \w+:/g) ?? []).length === 1,
       `session hook (${surface}, ${coach}): not exactly this level's line`);
   }
 }
 check(hook('session-rules.mjs', ['SubagentStart'], {}).includes('## Working rules'), 'subagent hook: no rules');
-check(hook('session-rules.mjs', [], { source: 'startup' }).includes('/ingot:start'), 'session hook: no /ingot:start offer in an untuned project');
-check(!hook('session-rules.mjs', [], { source: 'clear' }).includes('/ingot:start'), 'session hook: offer repeated after /clear');
+check(hook('session-rules.mjs', ['coach'], { source: 'startup' }).includes('/ingot:start'), 'session hook: no /ingot:start offer in an untuned project');
+check(!hook('session-rules.mjs', ['coach'], { source: 'clear' }).includes('/ingot:start'), 'session hook: offer repeated after /clear');
 const docGuard = (name) => hook('doc-guard.mjs', [], { tool_input: { file_path: path.join(tmp, name) }, tool_response: { type: 'create' } });
 check(docGuard('SUMMARY.md').includes('documentation file'), 'doc-guard: no reminder for SUMMARY.md');
 check(!docGuard('notes.txt'), 'doc-guard: reminder for an ordinary file');
