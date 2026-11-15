@@ -102,7 +102,7 @@ Until a project has been specialized, Claude assumes coding if it finds code, an
 
 ## How it works
 
-**Every session starts with six short working rules:**
+**Every session starts with seven short working rules:**
 
 - **Done means verified:** run a check and say what it showed.
 - **Big tasks get an expert's setup:** a clear scope, the right skill, and a way back. Claude works on a new branch (or a restore copy outside git), leaves other sessions' unsaved work alone, and never pushes or deploys without your OK.
@@ -110,8 +110,9 @@ Until a project has been specialized, Claude assumes coding if it finds code, an
 - **Only what was asked.**
 - **Ask once, with batched questions, when it really matters.**
 - **Don't get stuck:** change approach after two failures, and give every wait a deadline.
+- **Delegate by job, on the cheapest model that can do it:** helpers run on Haiku, Sonnet, Opus or Fable by what each job needs, instead of all inheriting yours.
 
-On top of those come the project's category rules, coaching, the reply style and at most one project offer. With the defaults that is about 1,000 to 1,150 tokens, plus about 350 for the short descriptions of Ingot's commands that Claude Code lists. With every category, the `core` style and `extra` coaching it tops out near 1,750 plus that list. Helper agents that Claude starts get only three lines (about 80 tokens).
+On top of those come the project's category rules, coaching, the reply style and at most one project offer. With the defaults that is about 1,000 to 1,150 tokens, plus about 350 for the short descriptions of Ingot's commands that Claude Code lists. With every category, the `core` style and `extra` coaching it tops out near 1,750 plus that list. Helper agents that Claude starts get only five lines (about 120 tokens).
 
 **Model notes.** Each model has its own habits, so Ingot adds a few lines for the one answering, taken from Anthropic's prompting guide for it. Fable 5.2 is told the code is its own, so it merges code it would otherwise copy, and it's told to finish the whole task and list every change. Opus 5.5 looks around before changing anything and avoids its default frontend looks. Sonnet 5.5 runs a real check before calling code done and searches for anything that may have changed since it was trained. Hooks aren't told the model, so the first prompt gets every model's notes (about 300 tokens) and Claude, which knows its own model, applies only its section. After that Ingot reads the model from the session and adds notes again only after `/model` switches it, or after `/clear` or `/compact`.
 
