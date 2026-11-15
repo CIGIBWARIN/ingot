@@ -86,7 +86,7 @@ The desktop app doesn't load plugins in WSL sessions, so open Windows folders di
 
 | Category | For | Its rules |
 |---|---|---|
-| **coding** | apps, sites, scripts, extensions | Tests only where things can break. Code lives with what uses it, shared once a second page needs it, in files split by feature. Comments match the code around them. Look at the real result. |
+| **coding** | apps, sites, scripts, extensions | Tests only where things can break. Code lives with what uses it, shared once a second page needs it, in files split by feature. To-do lists change in the same commit as the work. Comments match the code around them. Look at the real result. |
 | **content** | writing, social, newsletters, video, visual design | Match the existing voice. Never invent quotes or stats. Humanizer pass on final drafts. `/watch` for video references. |
 | **agentic** | automations, ops, scheduled and browser tasks | Preview and confirm before anything that touches the outside world. Safe re-runs, a log of each run, `/schedule` for recurring work. |
 | **research** | sources, data, analysis, reports | Every claim sourced. Facts and opinions kept apart. Raw data left untouched, and the working for every number shown. |
